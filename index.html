@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101820">
+<title>OTC Future Candle AI — Prototype</title>
+<style>
+:root{--bg:#0c141b;--panel:#14212b;--panel2:#1a2a35;--line:#293b47;--text:#eaf2f6;--muted:#91a4af;--green:#20c987;--red:#ff5b68;--gold:#f3c969}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:16px 15px 12px;background:#101b24;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.brand{font-weight:800;letter-spacing:.7px;font-size:17px}.sub{color:var(--muted);font-size:11px;margin-top:4px}
+.wrap{padding:12px;max-width:760px;margin:auto}.row{display:flex;gap:8px;align-items:center}.between{justify-content:space-between}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:11px}
+select,button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}
+select{flex:1;min-width:0}.tabs{display:flex;gap:6px}.tabs button{flex:1;padding:8px 4px;color:var(--muted)}.tabs button.active{background:#214538;border-color:var(--green);color:var(--green);font-weight:700}
+.badge{font-size:10px;padding:5px 8px;border-radius:20px;background:#493b1d;color:var(--gold);font-weight:800;letter-spacing:.5px}
+.charthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.price{font-size:20px;font-weight:750}.muted{color:var(--muted)}.chart{width:100%;height:220px;background:#0e1921;border-radius:8px;border:1px solid var(--line);display:block}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:8px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sectiontitle{font-size:12px;font-weight:800;letter-spacing:.7px;color:#b9c8d0;margin-bottom:10px}
+.predictions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.pred{background:#0f1b23;border:1px solid var(--line);border-radius:10px;padding:11px}.pred h3{margin:0 0 8px;font-size:12px;color:var(--muted)}.direction{font-size:17px;font-weight:850}.up{color:var(--green)}.down{color:var(--red)}.metrics{font-size:11px;line-height:1.8;color:#bdcbd2;margin-top:7px}
+.signal{display:grid;grid-template-columns:1fr 1fr;gap:8px}.signalbox{border-radius:9px;padding:12px;text-align:center;background:#0f1b23}.signalbox strong{font-size:19px;display:block}.buy{color:var(--green)}.sell{color:var(--red)}
+.notice{font-size:11px;line-height:1.5;color:var(--gold);background:#302a1b;border:1px solid #554624;padding:10px;border-radius:8px}
+button.primary{background:#176d50;border-color:#238d69;font-weight:700;width:100%;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+footer{text-align:center;color:var(--muted);font-size:10px;padding:8px 0 24px}
+@media(min-width:600px){.wrap{padding:18px}.chart{height:280px}}
+</style>
+</head>
+<body>
+<header><div class="brand">OTC FUTURE CANDLE AI</div><div class="sub">iPhone Web App • Quotex-style layout • Prototype</div></header>
+<main class="wrap">
+ <div class="row" style="margin-bottom:10px"><select id="pair"><option>EUR/USD OTC</option><option>GBP/USD OTC</option><option>USD/JPY OTC</option><option>AUD/USD OTC</option><option>USD/CHF OTC</option></select><span class="badge">DEMO DATA</span></div>
+ <div class="card">
+  <div class="charthead"><div><div class="muted" style="font-size:11px">SIMULATED PRICE</div><div class="price" id="price">1.08452</div></div><div style="text-align:right"><div class="muted" style="font-size:11px">TIMEFRAME</div><div class="tabs" id="timeframes"><button class="active" data-tf="M1">M1</button><button data-tf="M5">M5</button></div></div></div>
+  <canvas class="chart" id="chart" width="700" height="300"></canvas>
+  <div class="legend"><span><i class="dot" style="background:var(--green)"></i>Up candle</span><span><i class="dot" style="background:var(--red)"></i>Down candle</span><span><i class="dot" style="background:var(--gold)"></i>Predicted (illustrative)</span></div>
+ </div>
+ <div class="card">
+  <div class="sectiontitle">AI SIGNAL PANEL</div>
+  <div class="signal"><div class="signalbox"><span class="muted">DEMO SIGNAL</span><strong class="buy" id="signal">WAIT</strong></div><div class="signalbox"><span class="muted">CONFIDENCE</span><strong id="confidence">—</strong></div></div>
+  <button class="primary" id="scan">RUN DEMO ANALYSIS</button>
+ </div>
+ <div class="card">
+  <div class="sectiontitle">NEXT 2 CANDLE PREDICTION — ILLUSTRATIVE ONLY</div>
+  <div class="predictions">
+   <div class="pred"><h3>CANDLE 1</h3><div class="direction up" id="dir1">GREEN ↑</div><div class="metrics" id="m1">Open: —<br>Close: —<br>Body: —<br>Upper wick: —<br>Lower wick: —</div></div>
+   <div class="pred"><h3>CANDLE 2</h3><div class="direction down" id="dir2">RED ↓</div><div class="metrics" id="m2">Open: —<br>Close: —<br>Body: —<br>Upper wick: —<br>Lower wick: —</div></div>
+  </div>
+ </div>
+ <div class="card"><div class="sectiontitle">SESSION STATISTICS</div><div class="row between"><span class="muted">Predictions recorded</span><strong id="count">0</strong></div><div class="row between" style="margin-top:9px"><span class="muted">Verified accuracy</span><strong>Not available yet</strong></div><p class="muted" style="font-size:11px;margin-bottom:0">Accuracy will be calculated only after predictions are compared with completed candles from a verified data source.</p></div>
+ <div class="card"><div class="sectiontitle">RECENT DEMO SIGNALS</div><table><thead><tr><th>TIME</th><th>PAIR</th><th>TF</th><th>SIGNAL</th></tr></thead><tbody id="history"><tr><td colspan="4" class="muted">No demo scans yet</td></tr></tbody></table></div>
+ <div class="notice">Important: This is an interface prototype using simulated values. It is NOT connected to Quotex, does not read OTC prices, and does not generate real trading signals. OTC feeds may be proprietary; we must verify a lawful, reliable data source before building live predictions. No accuracy or profit is guaranteed.</div>
+ <footer>Prototype v0.1 • Manual trading only • No auto-trading</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);let tf='M1',count=0,history=[];
+function draw(){
+ const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle='#263944';ctx.lineWidth=1;for(let y=35;y<h;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ let vals=[],p=150;for(let i=0;i<23;i++){let o=p,cl=o+(Math.random()-.48)*27,hi=Math.max(o,cl)+Math.random()*13,lo=Math.min(o,cl)-Math.random()*13;vals.push({o,cl,hi,lo});p=cl}
+ const step=w/27;vals.forEach((v,i)=>candle(ctx,step*(i+1),v.o,v.cl,v.hi,v.lo,i));
+ let last=vals[vals.length-1],o=last.cl,cl=o+(Math.random()-.5)*30;ctx.setLineDash([5,4]);candle(ctx,step*25,o,cl,Math.max(o,cl)+9,Math.min(o,cl)-9,25,true);ctx.setLineDash([]);
+ $('price').textContent=(1.08400+Math.random()*.001).toFixed(5);
+}
+function candle(ctx,x,o,cl,hi,lo,i,pred=false){let scale=0.72,y=v=>235-v*scale;let color=pred?'#f3c969':cl>=o?'#20c987':'#ff5b68';ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y(hi));ctx.lineTo(x,y(lo));ctx.stroke();let top=Math.min(y(o),y(cl)),height=Math.max(3,Math.abs(y(o)-y(cl)));if(pred){ctx.strokeRect(x-6,top,12,height)}else ctx.fillRect(x-6,top,12,height)}
+function scan(){count++;let up=Math.random()>.5,confidence=Math.floor(54+Math.random()*25),base=1.084+Math.random()*.001;let a=base,b=base+(Math.random()-.5)*.0005,c=b+(Math.random()-.5)*.0005;
+ $('signal').textContent=confidence>=68?(up?'BUY':'SELL'):'WAIT';$('signal').className=confidence>=68?(up?'buy':'sell'):'';
+ $('confidence').textContent=confidence+'%';$('dir1').textContent=up?'GREEN ↑':'RED ↓';$('dir1').className='direction '+(up?'up':'down');$('dir2').textContent=up?'RED ↓':'GREEN ↑';$('dir2').className='direction '+(up?'down':'up');
+ $('m1').innerHTML=`Open: ${a.toFixed(5)}<br>Close: ${b.toFixed(5)}<br>Body: ${Math.abs(b-a).toFixed(5)}<br>Upper wick: 0.00008<br>Lower wick: 0.00005`;
+ $('m2').innerHTML=`Open: ${b.toFixed(5)}<br>Close: ${c.toFixed(5)}<br>Body: ${Math.abs(c-b).toFixed(5)}<br>Upper wick: 0.00006<br>Lower wick: 0.00009`;
+ $('count').textContent=count;let t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});history.unshift(`<tr><td>${t}</td><td>${$('pair').value}</td><td>${tf}</td><td style="color:${confidence>=68?(up?'var(--green)':'var(--red)'):'var(--gold)'}">${$('signal').textContent}</td></tr>`);history=history.slice(0,5);$('history').innerHTML=history.join('');draw();
+}
+$('scan').addEventListener('click',scan);document.querySelectorAll('#timeframes button').forEach(b=>b.addEventListener('click',()=>{tf=b.dataset.tf;document.querySelectorAll('#timeframes button').forEach(x=>x.classList.toggle('active',x===b));draw()}));draw();
+</script>
+</body></html>
